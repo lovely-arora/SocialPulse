@@ -6,6 +6,8 @@
 -- Generation Time: Feb 25, 2024 at 08:49 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
+ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'root';
+
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;

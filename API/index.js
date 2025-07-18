@@ -1,6 +1,10 @@
 import express from "express";
 import cors from 'cors';
 import cookieParser from "cookie-parser";
+import path from "path";
+import multer from "multer";
+
+// Route imports
 import authRoutes from "./routes/auth.js";
 import commentRoutes from "./routes/comments.js";
 import likeRoutes from "./routes/likes.js";
@@ -8,11 +12,11 @@ import postRoutes from "./routes/posts.js";
 import usersRoutes from "./routes/users.js";
 import relationshipRoutes from "./routes/relationships.js";
 import storiesRoutes from "./routes/stories.js";
-import multer from "multer";
+
 const app = express();
+const __dirname = path.resolve();
 
-// Middleware order matters, so place CORS before other middleware and route declarations (that shit is by chatgbt)
-
+// CORS
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", true);
   next();
@@ -20,31 +24,35 @@ app.use((req, res, next) => {
 
 app.use(cors({
   origin: "http://localhost:5173",
+  credentials: true
 }));
 
+
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
 
+// Static file route
+app.use("/uploads", express.static(path.join(__dirname, "/public/uploads")));
 
-
+// Multer setup
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, '../frontend/public/uploads/posts')
+    cb(null, path.join(__dirname, "/public/uploads"));
   },
   filename: function (req, file, cb) {
-    //const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) that shit saves images without extention
-    cb(null, Date.now() + file.originalname);
+    cb(null, Date.now() + path.extname(file.originalname));
   }
-})
+});
+const upload = multer({ storage: storage });
 
-const upload = multer({ storage: storage })
-
-
-app.post("/api/upload",upload.single("file"), (req,res)=>{
+// Upload route
+app.post("/api/upload", upload.single("file"), (req, res) => {
   const file = req.file;
-  res.status(200).json(file.filename)
+  res.status(200).json(file.filename);
 });
 
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/likes", likeRoutes);
@@ -53,7 +61,7 @@ app.use("/api/users", usersRoutes);
 app.use("/api/relationships", relationshipRoutes);
 app.use("/api/stories", storiesRoutes);
 
-
+// Start server
 app.listen(8800, () => {
   console.log("MyDevify Social is working ...");
 });

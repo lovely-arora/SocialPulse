@@ -1,0 +1,63 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0   # <-- use 8.0 specifically (stable with init scripts)
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: social
+    volumes:
+      - /home/lovely/SocialPulse/mydevify_social.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"  # MySQL internal
+    networks:
+      - mynet
+
+  backend:
+    build: ./API
+    container_name: backend
+    ports:
+      - "8800:8800"
+    depends_on:
+      - mysql
+    volumes:
+      - ./API:/app
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=social
+    networks:
+      - mynet
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+    networks:
+      - mynet
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+          - mysql
+    networks:
+          - mynet
+
+networks:
+  mynet:
+    driver: bridge
