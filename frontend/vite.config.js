@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://backend:8800',
+        target: 'http://api:8800',  // fixed: 'api' not 'backend'
         changeOrigin: true,
         secure: false,
       },

@@ -13,5 +13,6 @@ RUN npm install
 
 COPY . .
 
-CMD ["./wait-for.sh", "mysql", "3306", "npm", "run", "dev"]
+CMD ["./wait-for.sh", "db", "3306", "npm", "run", "dev"]
+
 

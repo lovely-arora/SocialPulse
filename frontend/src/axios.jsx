@@ -1,6 +1,8 @@
-import axios from 'axios'
+import axios from "axios";
 
 export const makeRequest = axios.create({
-    baseURL: "http://localhost:8800/api/",
-    withCredentials: true,
-})
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true
+});
+
+export default makeRequest;
