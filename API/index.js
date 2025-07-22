@@ -77,6 +77,6 @@ app.use("/api/relationships", relationshipRoutes);
 app.use("/api/stories", storiesRoutes);
 
 // ✅ Start server
-app.listen(8800, () => {
-  console.log("MyDevify Social is working on port 8800...");
+app.listen(8800, '0.0.0.0', () => {
+  console.log("Backend server is running!");
 });

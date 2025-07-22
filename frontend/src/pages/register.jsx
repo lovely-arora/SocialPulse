@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import makeRequest from "../axios"; // ✅ correct for default export
+
 
 const Register = () => {
 
@@ -20,7 +21,12 @@ const Register = () => {
       e.preventDefault();
   
       try {
-        const response = await axios.post("http://localhost:8800/api/auth/register", inputs);
+        
+
+        const response = await makeRequest.post(`/auth/register`, inputs);
+        
+        
+
     setErr(null); // Clear any previous errors
     console.log(response.data); // Access data if it exists
   } catch (error) {
@@ -33,6 +39,7 @@ const Register = () => {
     };
   
     console.log(err)
+    {err && <span className="text-red-500">{err}</span>}
 
   return (
     <div className="hero min-h-screen bg-base-200">

@@ -5,21 +5,25 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_API_URL: http://api:8800  #https://your-domain.com/api  or if using internal networking
+        VITE_API_URL: http://api:8800 # internal Docker service URL
     ports:
-      - "80:80"
-      - "443:443"
+      - "5173:5173"  # Vite default dev port
     depends_on:
       - api
+    command: npm run dev -- --host  # run Vite dev server
+    networks:
+      - appnet
 
   api:
     build: ./API
-    ports:
-      - "8800:8800"
     volumes:
       - ./API:/app
     depends_on:
       - db
+    ports:
+      - "8800:8800" 
+    networks:
+      - appnet
 
   db:
     image: mysql:5.7
@@ -29,7 +33,8 @@ services:
       MYSQL_DATABASE: social
     volumes:
       - ./mydevify_social.sql:/docker-entrypoint-initdb.d/init.sql
-
+    networks:
+      - appnet
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -39,6 +44,9 @@ services:
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: root
+    networks:
+      - appnet
 
-volumes:
-  db_data:
+networks:
+  appnet:
+    driver: bridge
