@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
+import { makeRequest } from "../axios";
 
 export const AuthContext = createContext();
 
@@ -11,11 +12,9 @@ export const AuthContextProvider = ({ children }) => {
   );
 
   const login = async (inputs) => {
-    //TO DO
-    const res = axios.post("http://localhost:8800/api/auth/login",inputs,{
-      withCredentials:true,
-    });
-setCurrentUser((await res).data)
+    // Use the shared axios instance with the correct baseURL
+    const res = await makeRequest.post("/auth/login", inputs);
+    setCurrentUser(res.data);
   };
 
   useEffect(() => {

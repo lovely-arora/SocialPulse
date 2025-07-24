@@ -4,24 +4,20 @@ services:
   frontend:
     build:
       context: ./frontend
-      args:
-        VITE_API_URL: http://api:8800 # internal Docker service URL
+    environment: #should be at same level of build 
+      VITE_API_URL: http://api:8800 # internal Docker service URL
     ports:
       - "5173:5173"  # Vite default dev port
     depends_on:
       - api
-    command: npm run dev -- --host  # run Vite dev server
     networks:
       - appnet
 
   api:
-    build: ./API
-    volumes:
-      - ./API:/app
+    build: ./API  ##Use the expanded form (build: { context: ..., dockerfile: ..., args: ... }) if you need to specify additional build options, such as a custom Dockerfile name or build arguments.
+    # Volume removed because we dont want live reload .. and we are going to push this on production 
     depends_on:
       - db
-    ports:
-      - "8800:8800" 
     networks:
       - appnet
 
@@ -35,6 +31,13 @@ services:
       - ./mydevify_social.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - appnet
+    #healthcheck:
+    #  test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+    #  interval: 10s
+    #  timeout: 20s
+    #  retries: 50
+    #  start_period: 30s
+    ## check how we can add health check for my sql db cointairner in docker compose file s
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

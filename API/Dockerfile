@@ -13,6 +13,8 @@ RUN npm install
 
 COPY . .
 
+COPY wait-for.sh .
+RUN chmod +x wait-for.sh
 CMD ["./wait-for.sh", "db", "3306", "npm", "run", "dev"]
-
+#Remove this wait for sh file once health check is enabled in docker compose file 
 
